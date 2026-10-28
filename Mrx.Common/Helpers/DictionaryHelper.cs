@@ -32,8 +32,11 @@ namespace Mrx.Common.Helpers
         //}
         public static Dictionary<string, string> Merge(params Dictionary<string, string>[] dictionaries)
         {
+            if (dictionaries == null || dictionaries.Length == 0)
+                return new Dictionary<string, string>();
+
             return dictionaries
-                .Where(p => p.IsNotNull())
+                .Where(p => p.IsNotNullOrEmpty())
                 .SelectMany(dict => dict)
                 .ToLookup(pair => pair.Key, pair => pair.Value)
                 .ToDictionary(group => group.Key, group => group.First());

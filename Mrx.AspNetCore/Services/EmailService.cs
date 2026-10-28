@@ -29,7 +29,7 @@ namespace Mrx.AspNetCore.Services
 
         public void Send(string subject, string body, params string[] emails)
         {
-            if (emails.IsNull())
+            if (emails.IsNullOrEmpty())
             {
                 return;
             }

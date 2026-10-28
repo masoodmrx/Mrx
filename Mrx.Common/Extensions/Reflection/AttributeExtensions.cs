@@ -52,7 +52,7 @@ namespace Mrx.Common.Extensions
             }
 
             MemberInfo[] memberInfo = type.GetMember(enumerationValue.ToString());
-            if (memberInfo.IsNotNull())
+            if (memberInfo.IsNotNullOrEmpty())
             {
                 return memberInfo[0].GetCustomAttribute<TAttr>();
             }

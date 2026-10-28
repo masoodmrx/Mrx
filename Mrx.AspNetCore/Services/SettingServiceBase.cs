@@ -33,16 +33,16 @@ namespace Mrx.AspNetCore.Services
         }
         #region Get
         public string? Get([CallerMemberName] string? key = null) => Settings?.SingleOrDefault(p => p.Key == (Collection.IsNullOrEmpty() ? "" : Collection + ".") + key)?.Value;
-        public bool? GetBool([CallerMemberName] string? key = null) => Get(key)?.ToBool();
-        public byte? GetByte([CallerMemberName] string? key = null) => Get(key)?.ToByte();
-        public short? GetShort([CallerMemberName] string? key = null) => Get(key)?.ToShort();
-        public int? GetInt([CallerMemberName] string? key = null) => Get(key)?.ToInt();
-        public long? GetLong([CallerMemberName] string? key = null) => Get(key)?.ToLong();
-        public float? GetFloat([CallerMemberName] string? key = null) => Get(key)?.ToFloat();
-        public double? GetDouble([CallerMemberName] string? key = null) => Get(key)?.ToDouble();
-        public decimal? GetDecimal([CallerMemberName] string? key = null) => Get(key)?.ToDecimal();
+        public bool? GetBool([CallerMemberName] string? key = null) => Get(key)?.ToBooleanNullable();
+        public byte? GetByte([CallerMemberName] string? key = null) => Get(key)?.ToByteNullable();
+        public short? GetShort([CallerMemberName] string? key = null) => Get(key)?.ToInt16Nullable();
+        public int? GetInt([CallerMemberName] string? key = null) => Get(key)?.ToInt32Nullable();
+        public long? GetLong([CallerMemberName] string? key = null) => Get(key)?.ToInt64Nullable();
+        public float? GetFloat([CallerMemberName] string? key = null) => Get(key)?.ToSingleNullable();
+        public double? GetDouble([CallerMemberName] string? key = null) => Get(key)?.ToDoubleNullable();
+        public decimal? GetDecimal([CallerMemberName] string? key = null) => Get(key)?.ToDecimalNullable();
         public TEnum? GetEnum<TEnum>([CallerMemberName] string? key = null) where TEnum : struct => Get(key)?.ToEnum<TEnum>();
-        public TimeSpan? GetTimeSpan([CallerMemberName] string? key = null) => Get(key)?.ToTimeSpan();
+        public TimeSpan? GetTimeSpan([CallerMemberName] string? key = null) => Get(key)?.ToTimeSpanNullable();
         public T[]? GetArray<T>([CallerMemberName] string? key = null) => Get(key)?.DeserializeJson<T[]>();
         #endregion
         #region Set

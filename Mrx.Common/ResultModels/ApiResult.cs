@@ -11,11 +11,12 @@ namespace Mrx.Common.ResultModels
         public static ApiResult Successed() => new ApiResult { Success = true };
         //public static ApiResult<T> Successed<T>() where T : class, new() => new ApiResult<T> { Success = true };
         public static ApiResult<T> Successed<T>(T? result) where T : class, new() => Ok(true, result);
-        public static ApiResult SuccessedObject(object result) => (ApiResult)Successed(result);
+        public static ApiResult SuccessedObject(object result) => new ApiResult { Success = true, Result = result };
 
         public static ApiResult<T> Ok<T>(bool success, T? result, List<KeyValuePair<string?, string?>>? errors = null) where T : class, new() => new ApiResult<T> { Success = success, Result = result, Errors = errors };
         public static ApiResult<T> Ok<T>(T? result, List<KeyValuePair<string?, string?>>? errors = null) where T : class, new() => Ok(result != null, result, errors);
-        public static ApiResult? OkObject(object result, List<KeyValuePair<string?, string?>>? errors = null) => (ApiResult)Ok(result, errors);
+        public static ApiResult? OkObject(object result, List<KeyValuePair<string?, string?>>? errors = null)
+            => new ApiResult { Success = result != null, Result = result, Errors = errors };
         public static ApiResult Ok(bool success, List<KeyValuePair<string?, string?>>? errors = null) => new ApiResult { Success = success, Errors = errors };
         //public static ApiResult<T> Ok<T>(T? result) where T : class, new() => Ok<T>(result != null, result);
     }

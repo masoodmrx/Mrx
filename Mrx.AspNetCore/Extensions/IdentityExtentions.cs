@@ -4,13 +4,10 @@ namespace Mrx.AspNetCore.Extensions
     {
         public static void AddModelErrors(this ModelStateDictionary modelState, IEnumerable<IdentityError> errors)
         {
-            foreach (IdentityError error in errors)
-            {
-                modelState.AddModelError(error.Code, error.Description);
-            }
+            modelState.AddErrors(errors);
         }
-        public static string GetUserId(this ClaimsPrincipal claims) => claims.FindFirstValue(ClaimTypes.NameIdentifier);
-        public static string GetUserId(this IHttpContextAccessor httpContextAccessor) => httpContextAccessor?.HttpContext?.User?.GetUserId();
-        public static DateTime? GetUpdateDate(this ClaimsPrincipal claims) => claims.FindFirstValue("UpdateDate").ToDateTime();
+        public static string? GetUserId(this ClaimsPrincipal? claims) => claims?.FindFirstValue(ClaimTypes.NameIdentifier);
+        public static string? GetUserId(this IHttpContextAccessor? httpContextAccessor) => httpContextAccessor?.HttpContext?.User?.GetUserId();
+        public static DateTime? GetUpdateDate(this ClaimsPrincipal? claims) => claims?.FindFirstValue("UpdateDate").ToDateTimeNullable();
     }
 }

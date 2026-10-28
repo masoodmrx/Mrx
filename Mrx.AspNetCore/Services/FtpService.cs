@@ -60,7 +60,7 @@ namespace Mrx.AspNetCore.Services
         public async Task<FtpUploadResult> UploadAsync(byte[] bytes, string directory, string fileName)
         {
             string path = $"{directory}/{fileName}";
-            if (bytes.IsNull())
+            if (bytes.IsNullOrEmpty())
             {
                 return FtpUploadResult.Failed(fileName, Account.Domain + path);
             }
@@ -175,7 +175,7 @@ namespace Mrx.AspNetCore.Services
         public FtpUploadResult Upload(byte[] bytes, string directory, string fileName)
         {
             string path = $"{directory}/{fileName}";
-            if (bytes.IsNull())
+            if (bytes.IsNullOrEmpty())
             {
                 return FtpUploadResult.Failed(fileName, Account.Domain + path);
             }

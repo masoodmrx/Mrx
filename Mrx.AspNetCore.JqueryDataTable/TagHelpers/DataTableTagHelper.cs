@@ -126,7 +126,7 @@ namespace Mrx.AspNetCore.JqueryDataTable.TagHelpers
             {
                 attrs.AddRange(attrs1);
             }
-            if (propertyInfo.PropertyType.IsEnum() && options.EnumCases.FirstOrDefault(p => p.Key == propertyInfo.PropertyType.GetTypeNullableType()) is KeyValuePair<Type, List<CaseBaseAttribute>> attrs2 && attrs2.Value.IsNotNull())
+            if (propertyInfo.PropertyType.IsEnum() && options.EnumCases.FirstOrDefault(p => p.Key == propertyInfo.PropertyType.GetTypeNullableType()) is KeyValuePair<Type, List<CaseBaseAttribute>> attrs2 && attrs2.Value.IsNotNullOrEmpty())
             {
                 attrs.AddRange(attrs2.Value);
             }

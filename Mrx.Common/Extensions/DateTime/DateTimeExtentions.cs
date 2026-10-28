@@ -97,7 +97,7 @@ namespace Mrx.Common.Extensions
 
         public static bool IsBetween(this DateTime? dt, DateTime start, DateTime end)
         {
-            return dt.HasValue && dt.IsBetween(start, end);
+            return dt.HasValue && dt.Value.IsBetween(start, end);
         }
         public static bool IsBetween(this DateTime dt, DateTime start, DateTime end)
         {

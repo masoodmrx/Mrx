@@ -225,7 +225,7 @@ namespace Mrx.AspNetCore.FormBuilder.TagHelpers
 
             if (Type == InputType.File)
             {
-                if (Accept.IsNotNull())
+                if (Accept.IsNotNullOrEmpty())
                 {
                     InputAttributes.Add("accept", Accept.StringJoin(","));
                 }
@@ -303,7 +303,7 @@ namespace Mrx.AspNetCore.FormBuilder.TagHelpers
             ViewData.Model = ViewContext.ViewData.Model;
             ViewData["InputData"] = new InputViewModel
             {
-                Color = options.Color.IsNull() ? Color : options.Color,
+                Color = options.Color.IsNullOrEmpty() ? Color : options.Color,
                 OnOpen = OnOpen,
                 OnClose = OnClose,
                 DisplayName = DisplayName ?? For.Metadata.DisplayName,

@@ -27,6 +27,9 @@
 
         public static string GetDataInTableFormat<T>(List<T> list)
         {
+            if (list == null || list.Count == 0)
+                return string.Empty;
+
             var props = typeof(T).GetProperties();
             var columns = props
                 .Where(p => !p.HasAttribute<IgnoreAttribute>() /*&& !p.PropertyType.IsSubclassOf(typeof(List<>))*/)
@@ -36,7 +39,7 @@
                 .Select(p =>
                 props
                 .Where(q => !q.HasAttribute<IgnoreAttribute>() /*&& !q.PropertyType.IsSubclassOf(typeof(List<>))*/)
-                .Select(q => q.GetValue(p)?.ToString() ?? "---")
+                .Select(q => p == null ? "---" : q.GetValue(p)?.ToString() ?? "---")
                 .ToArray()
                 )
                 .ToList();
@@ -61,8 +64,9 @@
             {
                 for (int i = 0; i < row.Length; i++)
                 {
-                    if (row.GetValue(i).ToString().Length > maximumCellWidths[i])
-                        maximumCellWidths[i] = row.GetValue(i).ToString().Length + 2;
+                    var cellText = row.GetValue(i)?.ToString() ?? "---";
+                    if (cellText.Length > maximumCellWidths[i])
+                        maximumCellWidths[i] = cellText.Length + 2;
                 }
             }
 
@@ -71,11 +75,14 @@
 
         public static string GetDataInTableFormat(List<string[]> table)
         {
+            if (table == null || table.Count == 0)
+                return string.Empty;
+
             StringBuilder formattedTable = new StringBuilder();
             Array nextRow = table.FirstOrDefault();
             Array previousRow = table.FirstOrDefault();
 
-            if (table == null || nextRow == null)
+            if (nextRow == null)
                 return string.Empty;
 
             // FIRST LINE:
@@ -101,7 +108,8 @@
                 int lastCellIndex = thisRow.Length - 1;
                 foreach (object thisCell in thisRow)
                 {
-                    string thisValue = string.Format("{0}{1}{2}", string.Empty.PadLeft((maximumCellWidths[cellIndex] - thisCell.ToString().Length) / 2), thisCell.ToString(), string.Empty.PadRight((maximumCellWidths[cellIndex] - thisCell.ToString().Length + 1) / 2));
+                    var cellText = thisCell?.ToString() ?? "---";
+                    string thisValue = string.Format("{0}{1}{2}", string.Empty.PadLeft((maximumCellWidths[cellIndex] - cellText.Length) / 2), cellText, string.Empty.PadRight((maximumCellWidths[cellIndex] - cellText.Length + 1) / 2));
 
                     if (cellIndex == 0 && cellIndex == lastCellIndex)
                         formattedTable.AppendLine(string.Format("{0}{1}{2}", VERTICAL_LINE, thisValue, VERTICAL_LINE));
