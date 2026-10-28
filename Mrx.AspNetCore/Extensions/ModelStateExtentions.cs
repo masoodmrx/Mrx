@@ -10,16 +10,20 @@ namespace Mrx.AspNetCore.Extensions
         {
             return modelState
                 .Where(modelError => modelError.Value?.Errors.Count > 0)
-                .Select(modelError => new KeyValuePair<string, string>(modelError.Key, modelError.Value?.Errors.FirstOrDefault()?.ErrorMessage))
+                .SelectMany(modelError => modelError.Value!.Errors.Select(error =>
+                    new KeyValuePair<string, string>(modelError.Key, error.ErrorMessage)))
                 .ToList();
         }
         public static List<KeyValuePair<string, string>> GetErrors(this IActionContextAccessor actionContextAccessor)
         {
-            return actionContextAccessor?.ActionContext?.ModelState?.GetErrors();
+            return actionContextAccessor?.ActionContext?.ModelState?.GetErrors() ?? [];
         }
         public static string? GetError(this ModelStateDictionary modelState)
         {
-            return modelState.Values.Select(p => p.Errors.FirstOrDefault()?.ErrorMessage).FirstOrDefault();
+            return modelState.Values
+                .SelectMany(state => state.Errors)
+                .Select(error => error.ErrorMessage)
+                .FirstOrDefault(error => !string.IsNullOrWhiteSpace(error));
         }
         public static string? GetError(this IActionContextAccessor actionContextAccessor)
         {
@@ -41,12 +45,19 @@ namespace Mrx.AspNetCore.Extensions
         {
             modelState?.AddModelError("", errorMessage);
         }
+        public static void AddErrors(this ModelStateDictionary modelState, IEnumerable<IdentityError> errors)
+        {
+            ArgumentNullException.ThrowIfNull(modelState);
+            ArgumentNullException.ThrowIfNull(errors);
+
+            foreach (var error in errors)
+            {
+                modelState.AddModelError(error.Code, error.Description);
+            }
+        }
         public static void AddErrors(this IActionContextAccessor actionContextAccessor, IEnumerable<IdentityError> errors)
         {
-            foreach (IdentityError error in errors)
-            {
-                actionContextAccessor.AddError(error.Code, error.Description);
-            }
+            actionContextAccessor?.ActionContext?.ModelState?.AddErrors(errors);
         }
     }
 }
