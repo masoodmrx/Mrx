@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Mrx.Common.Validation.DataAnnotations": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:1248;http://localhost:1250"
+    }
+  }
+}

@@ -1,0 +1,122 @@
+@inject RouteService routeService
+@{
+    var Data = ViewData["FormData"] as FormViewModel;
+    Layout = Data.Layout;
+    var formActions = Data.ModelExplorer.ModelType.GetCustomAttributes<ActionAttribute>();
+    Data.FormClasses.Add("row");
+    var props = Data.ModelExplorer.Properties
+        .Select(p => new
+        {
+            ModelExplorer = p,
+            PropertyInfo = Data.ModelExplorer.ModelType.GetProperty(p.Metadata.Name)
+        })
+        .Select(p => new
+        {
+            ModelExplorer = p.ModelExplorer,
+            PropertyInfo = p.PropertyInfo,
+            Attr = p.PropertyInfo?.GetCustomAttribute<InputAttribute>() ?? new InputAttribute { Class = Bootstrap.Grid.ColMd4, Type = p.PropertyInfo?.GetCustomAttribute<DisplayAttribute>() == null ? InputType.Hidden : InputType.Auto }
+        });
+    var properties = props
+        .Select(p => new
+        {
+            ModelExplorer = p.ModelExplorer,
+            PropertyInfo = p.PropertyInfo,
+            Required = p.PropertyInfo.HasAttribute<RequiredAttribute>(),
+            Attr = p.Attr,
+            Ignore = (p.Attr?.Ignore ?? false) || (props.SingleOrDefault(q => q.ModelExplorer.Metadata.Name == p.Attr?.PropertyIgnore)?.ModelExplorer?.Model?.ToBoolean() ?? false)
+        })
+        .ToList();
+
+    async Task Form()
+    {
+        @foreach (var property in properties)
+        {
+            if (!property.Ignore && (property.PropertyInfo.PropertyType.Name != "List`1" || property.Attr.Multiple))
+            {
+                <input-element asp-name="@property.ModelExplorer.Metadata.Name"
+               type="@property.Attr.Type"
+               file-type="@property.Attr.FileType"
+               accept="@property.Attr.Accept"
+               custom-view="@property.Attr.CustomView"
+               class="@property.Attr.Class"
+               input-class="@property.Attr.InputClass"
+               asp-items-source="@property.Attr.ItemsSource"
+               asp-items="@property.Attr.Items"
+               asp-items-option-label="@property.Attr.ItemsOptionLabel"
+               asp-items-has-option-label="@property.Attr.ItemsHasOptionLabel"
+               asp-items-service-type="@property.Attr.ItemsServiceType"
+               asp-items-service-method="@property.Attr.ItemsServiceMethod"
+               asp-items-service-method-params="@property.Attr.ItemsServiceMethodParams"
+               currency="@property.Attr.Currency"
+               disabled="@property.Attr.Disabled"
+               validation="@property.Attr.Validation"
+               autocomplete="@property.Attr.Autocomplete"
+               readonly="@property.Attr.Readonly"
+               autofocus="@property.Attr.Autofocus"
+               auto-init="@(property.Attr.AutoInit??Data.AutoInit)"
+               text-editor-height="@property.Attr.TextEditorHeight"
+               rows="@property.Attr.Rows"
+               cols="@property.Attr.Cols"
+               color="@property.Attr.Color"
+               on-open="@property.Attr.OnOpen"
+               on-close="@property.Attr.OnClose"
+               multiple="@property.Attr.Multiple"
+               tags="@property.Attr.Tags"
+               ajax-select="@property.Attr.AjaxSelect"
+               ajax-select-url="@property.Attr.AjaxSelectUrl"
+               ajax-select-method="@property.Attr.AjaxSelectMethod"
+               ajax-select-params="@property.Attr.AjaxSelectParams"
+               ajax-select-params-name="@property.Attr.AjaxSelectParamsName"
+               dt-reload="@(property.Attr._DataTableReload??Data.DataTableReload)"
+               required="@property.Required" />
+            }
+        }
+    }
+    async Task Actions()
+    {
+        if (formActions.Any())
+        {
+            @foreach (var action in formActions)
+            {
+                if (action is ActionLinkAttribute link)
+                {
+                    <a href="@routeService.RouteUrlFromTemplate(link.Url.InsertsValues(Data.ModelExplorer.Properties.Select(p => new KeyValuePair<string, string>(p.Metadata.Name, p.Model == null ? "" : p.Model.ToString())).ToArray()))" class="@link.Class" @Html.Raw(link.Attributes)>@link.Text</a>
+                }
+                else if (action is ActionButtonAttribute button)
+                {
+                    <button type="@button.Type" class="@button.Class" @Html.Raw(button.Attributes)>@button.Text</button>
+                }
+            }
+        }
+    }
+}
+@if (Data.FormContainer)
+{
+    Data.FormAttributes.Add("class", Bootstrap.Class(Data.FormClasses.ToArray()));
+    <form html-attributes="@Data.FormAttributes" asp-area="@Data.Area" asp-controller="@Data.Controller" asp-action="@Data.Action">
+        @{
+            await Form();
+        }
+        @if (Data.FormActions && formActions.Any())
+        {
+            <div class="col-12 mt-3 form-actions">
+                @{
+                    await Actions();
+                }
+            </div>
+        }
+    </form>
+}
+else
+{
+    <div class="@Bootstrap.Class(Data.FormClasses.ToArray())">
+        @{
+            await Form();
+        }
+    </div>
+}
+@section Actions{
+    @{
+        await Actions();
+    }
+}

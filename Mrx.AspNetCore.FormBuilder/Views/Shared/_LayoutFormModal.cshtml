@@ -1,0 +1,23 @@
+@{
+    var Data = ViewData["FormData"] as FormViewModel;
+}
+
+<form html-attributes="@Data.FormAttributes" asp-area="@Data.Area" asp-controller="@Data.Controller" asp-action="@Data.Action">
+    <div id="Modal@(Data.Id)" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered @Data.ModalSize.GetDataValue()">
+            <div class="modal-content">
+                <div id="Loading@(Data.Id)" class="card-loading" style="display:none"></div>
+                <div class="modal-header">
+                    <h5 class="modal-title">@Data.Title</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body modal-body-fixed row">
+                    @RenderBody()
+                </div>
+                <div class="modal-footer">
+                    @RenderSection("Actions")
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

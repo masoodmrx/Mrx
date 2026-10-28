@@ -1,0 +1,21 @@
+@{
+    var Data = ViewData["DataTable"] as DataTableViewModel;
+}
+
+<div id="Modal@(Data.TableId)" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered @Data.ModalSize.GetDataValue()">
+        <div class="modal-content">
+            <div id="Loading@(Data.TableId)" class="card-loading" style="display:none"></div>
+            <div class="modal-header">
+                <h5 class="modal-title">@Data.Title</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body modal-body-fixed">
+                @RenderBody()
+            </div>
+            <div class="modal-footer">
+                @RenderSection("Actions")
+            </div>
+        </div>
+    </div>
+</div>

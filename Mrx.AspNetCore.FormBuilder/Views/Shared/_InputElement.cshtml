@@ -1,0 +1,146 @@
+@inject IServiceProvider serviceProvider
+@inject IHtmlGenerator htmlGenerator
+@{
+    var Data = ViewData["InputData"] as InputViewModel;
+
+    async Task CreateLabel()
+    {
+        Data.LabelAttributes.Add("class", Bootstrap.Class(Data.LabelClasses.ToArray()));
+        @htmlGenerator.GenerateLabel(ViewContext, Data.For.ModelExplorer, Data.For.Name, Data.DisplayName, Data.LabelAttributes.ToDictionary())
+    }
+    async Task CreateInput()
+    {
+        Data.InputClasses.Add("form-control");
+        Data.InputAttributes.Add("class", Bootstrap.Class(Data.InputClasses.ToArray()));
+        switch (Data.Type)
+        {
+            case InputType.Select:
+                @htmlGenerator.GenerateSelect(ViewContext, Data.Validation ? Data.For.ModelExplorer : null, Data.ItemsOptionLabel, Data.For.Name, Data.Items, Data.Multiple, Data.InputAttributes.ToDictionary())
+                break;
+            case InputType.TextArea:
+            case InputType.TextEditor:
+                @*@Html.TextArea(Data.For.Name, Data.For.Model, Data.Row,, Data.For.Model?.ToString(), Data.InputAttributes.ToDictionary())*@
+                @htmlGenerator.GenerateTextArea(ViewContext, Data.Validation ? Data.For.ModelExplorer : null, Data.For.Name, Data.Rows, Data.Cols, Data.InputAttributes.ToDictionary())
+                break;
+            default:
+                Data.InputAttributes.Add("type", Data.Type.GetDataValue());
+                @htmlGenerator.GenerateTextBox(ViewContext, Data.Validation ? Data.For.ModelExplorer : null, Data.For.Name, Data.For.Model, "", Data.InputAttributes.ToDictionary())
+                break;
+        }
+    }
+    async Task CreateValidation()
+    {
+        Data.ValidationAttributes.Add("class", Bootstrap.Class(Data.ValidationClasses.ToArray()));
+        @htmlGenerator.GenerateValidationMessage(ViewContext, Data.For.ModelExplorer, Data.For.Name, "", "span", Data.ValidationAttributes.ToDictionary())
+    }
+    async Task Create()
+    {
+        await CreateLabel();
+        await CreateInput();
+        await CreateValidation();
+    }
+}
+
+@switch (Data.Type)
+{
+    case InputType.Hidden:
+        await CreateInput();
+        break;
+    case InputType.File:
+        switch (Data.FileType)
+        {
+            case InputFileType.Image:
+                //Data.FormGroupAttributes = Data.FormGroupAttributes.AddAndMerge("class", "d-none");
+                Data.FormGroupClasses.Add("p-1");
+                Data.InputAttributes.Add("upload-file", "");
+                await CreateInput();
+                Data.FormGroupAttributes.AddClasses(Data.FormGroupClasses);
+                <div html-attributes="@Data.FormGroupAttributes">
+                    <div class="card">
+                        <div class="row card-body p-2">
+                            <div class="col-4 text-center">
+                                <img upload-image-preview="#@Data.Id" upload-image-default="@Data.UploadImageDefault" upload-choose="#@Data.Id" style="object-fit:cover" width="70" height="70" src="@Data.UploadImageDefault" />
+                            </div>
+                            <div class="col-8">
+                                <h5 upload-filename="#@Data.Id" upload-label="@Data.For.Metadata.DisplayName" class="card-title">@Data.For.Metadata.DisplayName</h5>
+                                <div upload-validation>
+                                    @{await CreateValidation();}
+                                </div>
+                                <div class="container-fluid col-12">
+                                    <div class="row">
+                                        <button upload-choose="#@Data.Id" type="button" class="btn btn-primary btn-sm col-5">انتخاب</button>
+                                        <button upload-reset="#@Data.Id" type="button" class="btn btn-danger btn-sm col-5 offset-1">حذف</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+            default:
+                Data.FormGroupClasses.Add("p-1");
+                Data.InputClasses.Add("d-none");
+                Data.InputAttributes.Add("upload-file", "");
+                await CreateInput();
+                Data.FormGroupAttributes.AddClasses(Data.FormGroupClasses);
+                <div html-attributes="@Data.FormGroupAttributes">
+                    <div class="card">
+                        <div class="row card-body p-2">
+                            @*<div class="col-4 text-center">
+                                    <img upload-image-preview="#@Data.Id" upload-image-default="@Data.UploadImageDefault" upload-choose="#@Data.Id" style="object-fit:cover" width="70" height="70" src="@Data.UploadImageDefault" />
+                                </div>*@
+                            <div class="col-12">
+                                <h5 upload-filename="#@Data.Id" upload-label="@Data.DisplayName" class="card-title">@Data.DisplayName</h5>
+                                <div upload-validation>
+                                    @{await CreateValidation();}
+                                </div>
+                                <div class="container-fluid col-12">
+                                    <div class="row">
+                                        <button upload-choose="#@Data.Id" type="button" class="btn btn-primary btn-sm col-5">انتخاب</button>
+                                        <button upload-reset="#@Data.Id" type="button" class="btn btn-danger btn-sm col-5 offset-1">حذف</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+        }
+        break;
+    case InputType.DatePicker:
+    case InputType.TimePicker:
+        Data.FormGroupClasses.Add("form-group");
+        Data.FormGroupAttributes.AddClasses(Data.FormGroupClasses);
+        <div html-attributes="@Data.FormGroupAttributes">
+            @{ await CreateLabel(); }
+            <div class="input-group">
+                @*<div class="input-group-prepend">
+                        <button class="btn btn-primary p-1" type="button" @@click="@($"{Data.Id}.Show=true")"><i class="feather icon-calendar"></i></button>
+                    </div>*@
+                @{ await CreateInput(); }
+                <div class="input-group-append">
+                    <button class="btn btn-primary p-1" type="button" @@click="@($"{Data.Id}.Show=true")"><i class="feather icon-calendar"></i></button>
+                </div>
+                @*@if (Data.For.ModelExplorer.ModelType.IsNullableType())
+                    {
+                        <div class="input-group-append">
+                            <button class="btn btn-danger p-1" type="button" @@click="@($"{Data.Id}.Model=''")"><i class="feather icon-x"></i></button>
+                        </div>
+                    }*@
+            </div>
+            @{ await CreateValidation(); }
+            <date-picker @Html.Raw(Data.OnClose.IsNullOrEmpty() ? "" : $"@close='{Data.OnClose}'") @Html.Raw(Data.OnOpen.IsNullOrEmpty() ? "" : $"@open='{Data.OnOpen}'") :auto-submit="true" type="@(Data.Type == InputType.DatePicker ? "date" : "time")" v-model="@($"{Data.Id}.Model")" format="@(Data.Type == InputType.DatePicker ? "jYYYY/jMM/jDD" : "HH:mm")" element="@Data.Id" :editable="true" :show="@($"{Data.Id}.Show")" @@close="@($"{Data.Id}.Show=false")" color="@Data.Color" />
+        </div>
+        break;
+    default:
+        Data.FormGroupClasses.Add("form-group");
+        Data.FormGroupAttributes.AddClasses(Data.FormGroupClasses);
+        <div html-attributes="@Data.FormGroupAttributes">
+            @{ await Create(); }
+            @if (Data.Type == InputType.DatePicker || Data.Type == InputType.TimePicker)
+            {
+                <date-picker @Html.Raw(Data.OnClose.IsNullOrEmpty() ? "" : $"@close='{Data.OnClose}'") @Html.Raw(Data.OnOpen.IsNullOrEmpty() ? "" : $"@open='{Data.OnOpen}'") :auto-submit="true" type="@(Data.Type == InputType.DatePicker ? "date" : "time")" v-model="@($"{Data.Id}.Model")" format="@(Data.Type == InputType.DatePicker ? "jYYYY/jMM/jDD" : "HH:mm")" element="@Data.Id" :editable="true" :show="@($"{Data.Id}.Show")" @@close="@($"{Data.Id}.Show=false")" color="@Data.Color" />
+            }
+        </div>
+        break;
+}

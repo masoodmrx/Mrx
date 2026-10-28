@@ -1,0 +1,39 @@
+@inject RouteService routeService
+@{
+    var Data = ViewData["DataTable"] as DataTableViewModel;
+    Layout = Data.Layout;
+    var formActions = Data.ModelType.GetCustomAttributes<ActionAttribute>();
+}
+<input dt="#@Data.TableId" type="hidden" id="@(Data.TableId)Config" value="@JsonConvert.SerializeObject(Data.JqueryDataTable)" />
+
+<jquery-datatables id="@Data.TableId"
+                   class="@Data.TableClass"
+                   thead-class="@Data.TableHeadClass"
+                   model="@Activator.CreateInstance(Data.ModelType)">
+</jquery-datatables>
+
+@section Actions{
+    @{
+        await Actions();
+    }
+}
+@{
+    async Task Actions()
+    {
+        if (formActions.Any())
+        {
+            var values = Data.ModelExplorer.Properties.Select(p => new KeyValuePair<string, string>(p.Metadata.Name, p.Model == null ? "" : p.Model.ToString())).ToArray();
+            @foreach (var action in formActions)
+            {
+                if (action is ActionLinkAttribute link)
+                {
+                    <a href="@routeService.RouteUrlFromTemplate(link.Url.InsertsValues(values))" class="@link.Class" @Html.Raw(routeService.RouteUrlFromTemplate(link.Attributes.InsertsValues(values)))>@link.Text</a>
+                }
+                else if (action is ActionButtonAttribute button)
+                {
+                    <button type="@button.Type" class="@button.Class" @Html.Raw(routeService.RouteUrlFromTemplate(button.Attributes.InsertsValues(values)))>@button.Text</button>
+                }
+            }
+        }
+    }
+}

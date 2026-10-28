@@ -1,0 +1,20 @@
+@{
+    var Data = ViewData["FormData"] as FormViewModel;
+}
+
+<div id="Modal@(Data.FormAttributes["id"].ToString())" class="modal fade user-select-none" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Data.Title</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body modal-body-fixed">
+                @RenderBody()
+            </div>
+            <div class="modal-footer">
+                @RenderSection("FormActions")
+            </div>
+        </div>
+    </div>
+</div>

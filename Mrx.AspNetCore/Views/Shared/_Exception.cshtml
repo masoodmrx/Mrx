@@ -1,0 +1,174 @@
+@model ExceptionLog
+@inject IOptions<SiteReportOptions> options
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+<head>
+    <style>
+        table {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            direction: ltr;
+        }
+
+            table td,
+            table th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            table tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            table tr:hover {
+                background-color: #ddd;
+            }
+
+            table th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #797979;
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <th colspan="2" style="font-size: xx-large;text-align: center">@options.Value.EmailTitle</th>
+        </tr>
+    </table>
+    <p></p>
+
+    <table>
+        <tr>
+            <th colspan="2" style="text-align: center">Exception</th>
+        </tr>
+        <tr>
+            <td>Type</td>
+            <td>@Model.Type</td>
+        </tr>
+        <tr>
+            <td>Message</td>
+            <td>@Model.Message</td>
+        </tr>
+        <tr>
+            <td>Data</td>
+            <td>@Model.Data</td>
+        </tr>
+        <tr>
+            <td>HelpLink</td>
+            <td>@Model.HelpLink</td>
+        </tr>
+        <tr>
+            <td>Source</td>
+            <td>@Model.Source</td>
+        </tr>
+        <tr>
+            <td colspan="2">StackTrace</td>
+        </tr>
+        <tr>
+            <td colspan="2">@Model.StackTrace</td>
+        </tr>
+    </table>
+    <p></p>
+
+    <table>
+        <tr>
+            <th colspan="2" style="text-align: center">Visitor</th>
+        </tr>
+        <tr>
+            <td>Date Register</td>
+            <td>@Model.Visitor.DateRegister.ToLongDateString() @Model.Visitor.DateRegister.ToLongTimeString()</td>
+        </tr>
+        <tr>
+            <td>Method</td>
+            <td>@Model.Visitor.Method</td>
+        </tr>
+        <tr>
+            <td>Ip</td>
+            <td>@Model.Visitor.Ip</td>
+        </tr>
+        <tr>
+            <td>Path</td>
+            <td>@Model.Visitor.Path</td>
+        </tr>
+        <tr>
+            <td>User Id</td>
+            <td>@Model.Visitor.UserId</td>
+        </tr>
+        <tr>
+            <td>User Agent</td>
+            <td>@Model.Visitor.UserAgent</td>
+        </tr>
+        <tr>
+            <td>Device</td>
+            <td>@Model.Visitor.Device</td>
+        </tr>
+        <tr>
+            <td>Platform Name</td>
+            <td>@Model.Visitor.PlatformName</td>
+        </tr>
+        <tr>
+            <td>Platform Processor</td>
+            <td>@Model.Visitor.PlatformProcessor</td>
+        </tr>
+        <tr>
+            <td>Engine Name</td>
+            <td>@Model.Visitor.EngineName</td>
+        </tr>
+        <tr>
+            <td>Engine Version</td>
+            <td>@Model.Visitor.EngineVersion</td>
+        </tr>
+        <tr>
+            <td>Browser Name</td>
+            <td>@Model.Visitor.BrowserName</td>
+        </tr>
+        <tr>
+            <td>Browser Version</td>
+            <td>@Model.Visitor.BrowserVersion</td>
+        </tr>
+        <tr>
+            <td>Is Crawler</td>
+            <td>@Model.Visitor.IsCrawler</td>
+        </tr>
+        <tr>
+            <td>Crawler Name</td>
+            <td>@Model.Visitor.CrawlerName</td>
+        </tr>
+        <tr>
+            <td>Crawler Version</td>
+            <td>@Model.Visitor.CrawlerVersion</td>
+        </tr>
+    </table>
+    <p></p>
+
+    <table>
+        <tr>
+            <th colspan="2" style="text-align: center">QueryString</th>
+        </tr>
+        <tr>
+            <td>Key</td>
+            <td>Value</td>
+        </tr>
+        @if (Model.Visitor.QueryStrings.IsNull())
+        {
+            <tr>
+                <td colspan="2" style="text-align: center">Not Found</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var queryString in Model.Visitor.QueryStrings)
+            {
+                <tr>
+                    <td>@queryString.Key</td>
+                    <td>@queryString.Value</td>
+                </tr>
+            }
+        }
+    </table>
+</body>
+</html>        

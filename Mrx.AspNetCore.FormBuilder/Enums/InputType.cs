@@ -1,0 +1,36 @@
+namespace Mrx.AspNetCore.FormBuilder
+{
+    public enum InputType
+    {
+        [Data("text")]
+        Auto,
+        [Data("text")]
+        Text,
+        [Data("text")]
+        NumberText,
+        [Data("number")]
+        Number,
+        Select,
+        [Data("checkbox")]
+        CheckBox,
+        [Data("hidden")]
+        Hidden,
+        [Data("password")]
+        Password,
+        [Data("radio")]
+        Radio,
+        [Data("file")]
+        File,
+        [Data("text")]
+        DatePicker,
+        [Data("text")]
+        TimePicker,
+        [Data("text")]
+        Currency,
+        TextArea,
+        TextEditor,
+        [Data("email")]
+        Email,
+        Custom
+    }
+}
